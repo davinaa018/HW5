@@ -1,11 +1,10 @@
-package view;
+package lib;
 
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import lib.Board;
-import lib.Coordinate;
+import controller.Controller;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -17,15 +16,25 @@ public class BoardPanel extends JPanel {
     private static final Color boardColor = new Color(253, 218, 13);
     private Coordinate hoverIntersection;
     private Board board;
+    private Coordinate move;
+    private Controller controller;
 
     public BoardPanel(Board board){
         this.board = board;
+        this.controller = new Controller("http://omok.atwebpages.com/", this);
+
         setBackground(boardColor);
 
         // Hovering effect
-        hoveringEffect(false);
+        hoveringEffect(true);
         // Place stones
-        placeStone(false);
+        placeStone();
+        initializeBoard();
+        JFrame frame = new JFrame();
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.add(this);
+        frame.setSize(500, 500);
+        frame.setVisible(true);
     }
 
     @Override
@@ -36,6 +45,14 @@ public class BoardPanel extends JPanel {
         drawBoard(size, squareSize, g);
         drawHoverEffect(size, squareSize, g);
         drawStones(size, squareSize, g);
+    }
+
+    public void initializeBoard(){
+        board.initializeBoard();
+    }
+
+    public Board getBoard(){
+        return board;
     }
 
     /**
@@ -131,27 +148,31 @@ public class BoardPanel extends JPanel {
      * Places a stone on the board by using MouseListener
      * @param startGame
      */
-    public void placeStone(boolean startGame) {
-        if(startGame){
-            // Place stones on the board
-            addMouseListener(new MouseAdapter() {
-                    @Override
-                    public void mouseClicked(MouseEvent e) {
-                        int i = e.getX() / (getWidth() / board.getSize());
-                        int j = e.getY() / (getWidth() / board.getSize());
-                        if (i >= 0 && i < board.getSize() && j >= 0 && j < board.getSize()) {
-                            if (board.getPieceAt(i, j) == '-') {
-                                // place stone and switch player
-                                board.makeMove(i, j, 'X');
-                                System.out.println("Player 1 placed a stone at " + i + ", " + j);
-                                repaint();
+    public Coordinate placeStone() {
+        move = null;
+        addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                int i = e.getX() / (getWidth() / board.getSize());
+                int j = e.getY() / (getWidth() / board.getSize());
+                if (i >= 0 && i < board.getSize() && j >= 0 && j < board.getSize()) {
+                    if (board.getPieceAt(i, j) == '-') {
+                        // place stone and switch player
+                        
+                        controller.getInfo();
+                        String pid = controller.getNew("random");
+                        Coordinate userMove = new Coordinate(i, j);
+                        controller.getPlay(pid, userMove);
+                        repaint();
 
-                            }
-                        }
                     }
-                });
-        }
+                }
+            }
+        });
+        return move;
     }
+
+
 
     public static void main(String[] args) {
         Board board = new Board(15);

@@ -1,3 +1,4 @@
+package lib;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -75,7 +76,7 @@ public class WebService {
         return null;
     }
 
-    public void getPlay(String pid, int x, int y){
+    public Coordinate getPlay(String pid, int x, int y){
         try{
             // Create a URL Object for web service
             conn = new URL(url+"play/?pid="+ pid + "&x=" + x + "&y=" + y);
@@ -97,17 +98,15 @@ public class WebService {
             // Convert the response to a JSON object
             obj = new JSONObject(response.toString());
             System.out.println(obj.toString());
+            JSONObject move = (JSONObject) obj.get("move");
+            int j = (int) move.get("x");
+            int k = (int) move.get("y");
+            return new Coordinate(j, k);
         }catch(Exception e){
             e.printStackTrace();
         }
+        return null;
     }
 
 
-    public static void main(String[] args){
-        String url = "http://omok.atwebpages.com/";
-        WebService ws = new WebService(url);
-        ws.getInfo();
-        String pid = ws.getNew("Random");
-        ws.getPlay(pid, 1, 1);
-    }
 }
