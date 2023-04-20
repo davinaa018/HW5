@@ -19,7 +19,7 @@ public class WebService {
         this.url = url;
     }
 
-    public void getInfo(){
+    public JSONObject getInfo(){
         try{
             // Create a URL Object for web service
             conn = new URL(url+"info/");
@@ -40,13 +40,14 @@ public class WebService {
 
             // Convert the response to a JSON object
             obj = new JSONObject(response.toString());
-            System.out.println(obj.toString());
+            return obj;
         }catch(Exception e){
             e.printStackTrace();
         }
+        return null;
     }
 
-    public String getNew(String strategy){
+    public JSONObject getNew(String strategy){
         try{
             // Create a URL Object for web service
             conn = new URL(url+"new/?strategy="+strategy);
@@ -67,16 +68,14 @@ public class WebService {
 
             // Convert the response to a JSON object
             obj = new JSONObject(response.toString());
-            System.out.println(obj.toString());
-            String pid = obj.get("pid").toString();
-            return pid;
+            return obj;
         }catch(Exception e){
             e.printStackTrace();
         }
         return null;
     }
 
-    public Coordinate getPlay(String pid, int x, int y){
+    public JSONObject getPlay(String pid, int x, int y){
         try{
             // Create a URL Object for web service
             conn = new URL(url+"play/?pid="+ pid + "&x=" + x + "&y=" + y);
@@ -97,11 +96,7 @@ public class WebService {
 
             // Convert the response to a JSON object
             obj = new JSONObject(response.toString());
-            System.out.println(obj.toString());
-            JSONObject move = (JSONObject) obj.get("move");
-            int j = (int) move.get("x");
-            int k = (int) move.get("y");
-            return new Coordinate(j, k);
+            return obj;
         }catch(Exception e){
             e.printStackTrace();
         }
