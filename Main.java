@@ -162,12 +162,22 @@ public class Main extends JFrame {
      * Starts a new game if the user clicks the "Play" button or menu item, also sets the opponent type to human or computer
      */
     private void startGame(){
+        String server1;
+        if (this.server == null || this.server.isEmpty()) {
+            server1 = connectToServer();
+            if (server1 == null || server1.isEmpty()) {
+                // User cancelled the input or did not enter anything
+                return;
+            }
+            this.server = server1;
+        } else {
+            server1 = this.server;
+        }
         int result = JOptionPane.showConfirmDialog(null, "Do you want to start a new game?", "Omok", JOptionPane.YES_NO_OPTION);
         if(result == JOptionPane.YES_OPTION){
             this.controller = new Controller(boardPanel, comboBox.getSelectedItem().toString(), logTextArea);
             System.out.println(controller.getStrategy());
-            server = connectToServer();
-            controller.setUrl(server);  
+            controller.setUrl(this.server);  
             boardPanel.setController(controller);
             boardPanel.initializeBoard();;
             boardPanel.placeStone(true);
